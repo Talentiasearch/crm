@@ -411,15 +411,18 @@ function save(){try{localStorage.setItem(SK,JSON.stringify(procesos));toast("Gua
 function load(){
   try{
     var d=localStorage.getItem(SK);
+    var datosTotal=0;
+    DATOS.forEach(function(x){datosTotal+=(x.candidatos||[]).length;});
     if(d){
       var p=JSON.parse(d);
       var totalCands=0;
       if(Array.isArray(p)) p.forEach(function(x){totalCands+=(x.candidatos||[]).length;});
-      if(Array.isArray(p) && p.length>0 && totalCands>0){
+      // Si localStorage tiene menos candidatos que DATOS, usar DATOS
+      if(Array.isArray(p) && p.length>0 && totalCands>=datosTotal){
         procesos=p;
-        console.log("CRM: datos cargados desde localStorage — "+p.length+" procesos, "+totalCands+" candidatos");
+        console.log("CRM: datos desde localStorage — "+p.length+" procesos, "+totalCands+" candidatos");
       } else {
-        console.log("CRM: localStorage vacío, cargando datos embebidos ("+DATOS.length+" procesos)");
+        console.log("CRM: cargando datos embebidos ("+DATOS.length+" procesos, "+datosTotal+" candidatos)");
         procesos=JSON.parse(JSON.stringify(DATOS));
         save();
       }
