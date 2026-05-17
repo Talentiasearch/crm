@@ -246,31 +246,78 @@ details[open] summary{color:var(--blue)}
 
 <!-- INFORME EXCEL -->
 <div id="tab-informe" class="tp">
-  <div class="ph"><div class="pt">Informe Excel</div><div class="ps">Genera informes maquetados para el cliente</div></div>
+  <div class="ph"><div class="pt">Informe para cliente</div><div class="ps">Genera listados de candidatos maquetados con imagen Talentia Search</div></div>
+
   <div class="card">
-    <div class="slbl">Datos del informe</div>
+    <div class="slbl">Configurar informe</div>
     <div class="g3" style="margin-bottom:10px">
-      <div class="f"><label>Proceso</label><select id="if-p" onchange="loadInf()"><option value="">— selecciona —</option></select></div>
-      <div class="f"><label>Cliente</label><input id="if-c" oninput="renderPrev()"></div>
-      <div class="f"><label>Fecha</label><input id="if-f" type="date" oninput="renderPrev()"></div>
+      <div class="f"><label>Proceso</label>
+        <select id="if-p" onchange="loadInf()"><option value="">— selecciona proceso —</option></select>
+      </div>
+      <div class="f"><label>Cliente</label><input id="if-c" placeholder="Nombre del cliente" oninput="renderPrev()"></div>
+      <div class="f"><label>Fecha del informe</label><input id="if-f" type="date" oninput="renderPrev()"></div>
     </div>
-    <div class="f"><label>Incluir solo candidatos con estado</label><select id="if-fes" onchange="renderPrev()"><option value="">Todos</option><option>Avanza</option><option>Entrevistado por el cliente</option><option>Posible</option><option>Identificado</option><option>Contactado</option></select></div>
+    <div class="g2">
+      <div class="f"><label>Filtrar por estado</label>
+        <select id="if-fes" onchange="renderPrev()">
+          <option value="">Todos los estados</option>
+          <option>Avanza</option>
+          <option>Entrevistado por el cliente</option>
+          <option>Posible</option>
+          <option>Identificado</option>
+          <option>Contactado</option>
+          <option>Stand by</option>
+        </select>
+      </div>
+      <div class="f"><label>Ordenar por</label>
+        <select id="if-ord" onchange="renderPrev()">
+          <option value="nombre">Nombre A-Z</option>
+          <option value="estado">Estado</option>
+          <option value="empresa">Empresa A-Z</option>
+          <option value="valoracion">Valoración</option>
+        </select>
+      </div>
+    </div>
   </div>
+
   <div class="card">
     <div class="slbl">Columnas a incluir</div>
     <div class="chips" id="if-ch">
-      <span class="chip on" data-f="estado">Estado</span><span class="chip on" data-f="nombre">Nombre</span><span class="chip on" data-f="apellidos">Apellidos</span><span class="chip on" data-f="cargo">Cargo actual</span><span class="chip on" data-f="empresa">Empresa actual</span><span class="chip on" data-f="linkedin">LinkedIn</span><span class="chip" data-f="valoracion">Valoración</span><span class="chip" data-f="notas">Notas</span>
+      <span class="chip on" data-f="nombre">Nombre</span>
+      <span class="chip on" data-f="apellidos">Apellidos</span>
+      <span class="chip on" data-f="cargo">Cargo actual</span>
+      <span class="chip on" data-f="empresa">Empresa actual</span>
+      <span class="chip on" data-f="estado">Estado</span>
+      <span class="chip on" data-f="linkedin">LinkedIn</span>
+      <span class="chip" data-f="valoracion">Valoración</span>
+      <span class="chip" data-f="notas">Notas</span>
     </div>
-    <div style="font-size:11px;color:var(--t3);margin-top:7px">Formato maquetado con cabecera Talentia Search y colores corporativos</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:8px">Haz clic en las columnas para activarlas o desactivarlas</div>
   </div>
-  <div id="if-prev" style="display:none"><div class="card"><div class="slbl">Vista previa</div><div style="overflow-x:auto"><table class="ptbl" id="if-tbl"><thead></thead><tbody></tbody></table></div></div></div>
-  <div style="display:flex;gap:8px;align-items:center">
+
+  <div id="if-prev" style="display:none">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="slbl" style="margin:0">Vista previa — <span id="if-count" style="color:var(--blue);font-weight:700"></span></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="ptbl" id="if-tbl" style="width:100%">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     <button class="btn-p" id="if-dl" onclick="dlExcel()" disabled>↓ Descargar Excel</button>
-    <span id="if-ok" style="font-size:12px;color:#15803D;display:none;font-weight:600">✓ Excel generado</span>
+    <span id="if-ok" style="font-size:12px;color:#15803D;display:none;font-weight:600">✓ Excel generado correctamente</span>
+    <span style="font-size:11px;color:var(--t3)">Formato maquetado con cabecera Talentia Search y colores corporativos</span>
   </div>
 </div>
 
 <!-- IMPORTAR -->
+<div <!-- IMPORTAR -->
 <div id="tab-importar" class="tp">
   <div class="ph"><div class="pt">Importar</div><div class="ps">Carga procesos y candidatos desde Onix u otras fuentes</div></div>
 
@@ -499,11 +546,27 @@ function renderC(){
 function loadInf(){var id=parseInt(document.getElementById("if-p").value);var p=procesos.find(function(x){return x.id===id;});if(p)document.getElementById("if-c").value=p.cliente||"";renderPrev();}
 function getIfC(){var id=parseInt(document.getElementById("if-p").value);var p=procesos.find(function(x){return x.id===id;});if(!p)return[];var fe=document.getElementById("if-fes").value;return fe?p.candidatos.filter(function(c){return c.estado===fe;}):p.candidatos;}
 function renderPrev(){
-  var cands=getIfC(),pv=document.getElementById("if-prev");if(!cands.length){pv.style.display="none";return;}pv.style.display="block";
+  var cands=getIfC(),pv=document.getElementById("if-prev");
+  if(!cands.length){pv.style.display="none";return;}
+  pv.style.display="block";
+  var ord=document.getElementById("if-ord")?document.getElementById("if-ord").value:"nombre";
+  cands=cands.slice().sort(function(a,b){
+    var va=(a[ord]||"").toLowerCase(),vb=(b[ord]||"").toLowerCase();
+    return va<vb?-1:va>vb?1:0;
+  });
+  document.getElementById("if-count").textContent=cands.length+" candidato"+(cands.length!==1?"s":"");
   var L={estado:"Estado",nombre:"Nombre",apellidos:"Apellidos",cargo:"Cargo actual",empresa:"Empresa actual",linkedin:"LinkedIn",valoracion:"Valoración",notas:"Notas"};
   var flds=Array.from(document.querySelectorAll("#if-ch .chip.on")).map(function(c){return{k:c.dataset.f,l:L[c.dataset.f]};});
   document.querySelector("#if-tbl thead").innerHTML="<tr>"+flds.map(function(f){return"<th>"+f.l+"</th>";}).join("")+"</tr>";
-  document.querySelector("#if-tbl tbody").innerHTML=cands.map(function(c){return"<tr>"+flds.map(function(f){return"<td>"+(c[f.k]||"")+"</td>";}).join("")+"</tr>";}).join("");
+  document.querySelector("#if-tbl tbody").innerHTML=cands.map(function(c,i){
+    return"<tr style='"+(i%2===0?"background:#F0F7FF":"")+"'>"+flds.map(function(f){
+      var v=c[f.k]||"";
+      if(f.k==="linkedin"&&v)v="<a href='"+v+"' target='_blank' style='color:#2878B5'>Ver perfil</a>";
+      if(f.k==="valoracion"&&v)v="<span style='color:#F59E0B'>"+v+"</span>";
+      return"<td style='padding:7px 9px;font-size:12px'>"+v+"</td>";
+    }).join("")+"</tr>";
+  }).join("");
+  document.getElementById("if-dl").disabled=false;
 }
 function dlExcel(){
   if(typeof XLSX==="undefined")return;
