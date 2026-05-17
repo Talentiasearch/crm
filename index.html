@@ -463,7 +463,7 @@ function renderInicio(){
   document.getElementById("st-c").textContent=tc;document.getElementById("st-co").textContent=cc;
   var el=document.getElementById("inicio-act");
   if(!ac.length){el.innerHTML="<div class='empty'>No hay procesos activos.</div>";return;}
-  el.innerHTML=ac.map(function(p){return "<div class='crow' style='cursor:pointer' onclick="sw('procesos');setTimeout(function(){abrirP("+p.id+");},100);"><div class='av'>"+ini(p.nombre)+"</div><div style='flex:1;min-width:0'><div class='cn'>"+p.nombre+"</div><div class='cs'>"+[p.cliente,p.ciudad].filter(Boolean).join(" · ")+"</div></div><span class='ep' style='background:#DCFCE7;color:#15803D;border-color:#86EFAC'>Activo</span><span class='ep' style='background:#EFF6FF;color:#1e3a5f;border-color:#93C5FD;margin-left:4px'>"+p.candidatos.length+" cand.</span></div>";}).join("");
+  el.innerHTML=ac.map(function(p){return "<div class='crow' style='cursor:pointer' onclick=\"sw('procesos');setTimeout(function(){abrirP(\"+p.id+\");},100);\"><div class='av'>"+ini(p.nombre)+"</div><div style='flex:1;min-width:0'><div class='cn'>"+p.nombre+"</div><div class='cs'>"+[p.cliente,p.ciudad].filter(Boolean).join(" · ")+"</div></div><span class='ep' style='background:#DCFCE7;color:#15803D;border-color:#86EFAC'>Activo</span><span class='ep' style='background:#EFF6FF;color:#1e3a5f;border-color:#93C5FD;margin-left:4px'>"+p.candidatos.length+" cand.</span></div>";}).join("");
 }
 function getFP(){
   var q=(document.getElementById("p-q").value||"").toLowerCase().trim();
