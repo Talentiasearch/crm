@@ -246,7 +246,7 @@ details[open] summary{color:var(--blue)}
 
 <!-- INFORME EXCEL -->
 <div id="tab-informe" class="tp">
-  <div class="ph"><div class="pt">Informe para cliente</div><div class="ps">Genera listados de candidatos maquetados con imagen Talentia Search</div></div>
+  <div class="ph"><div class="pt">Informe para cliente</div><div class="ps">Genera informes profesionales de candidatos con logo Talentia Search</div></div>
 
   <div class="card">
     <div class="slbl">Configurar informe</div>
@@ -254,7 +254,7 @@ details[open] summary{color:var(--blue)}
       <div class="f"><label>Proceso</label>
         <select id="if-p" onchange="loadInf()"><option value="">— selecciona proceso —</option></select>
       </div>
-      <div class="f"><label>Cliente</label><input id="if-c" placeholder="Nombre del cliente" oninput="renderPrev()"></div>
+      <div class="f"><label>Para el cliente</label><input id="if-c" placeholder="Nombre del cliente o empresa" oninput="renderPrev()"></div>
       <div class="f"><label>Fecha del informe</label><input id="if-f" type="date" oninput="renderPrev()"></div>
     </div>
     <div class="g2">
@@ -262,6 +262,7 @@ details[open] summary{color:var(--blue)}
         <select id="if-fes" onchange="renderPrev()">
           <option value="">Todos los estados</option>
           <option>Avanza</option>
+          <option>Finalista</option>
           <option>Entrevistado por el cliente</option>
           <option>Posible</option>
           <option>Identificado</option>
@@ -274,47 +275,42 @@ details[open] summary{color:var(--blue)}
           <option value="nombre">Nombre A-Z</option>
           <option value="estado">Estado</option>
           <option value="empresa">Empresa A-Z</option>
-          <option value="valoracion">Valoración</option>
         </select>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="slbl">Columnas a incluir</div>
+    <div class="slbl">Campos a incluir en el informe</div>
     <div class="chips" id="if-ch">
       <span class="chip on" data-f="nombre">Nombre</span>
-      <span class="chip on" data-f="apellidos">Apellidos</span>
       <span class="chip on" data-f="cargo">Cargo actual</span>
       <span class="chip on" data-f="empresa">Empresa actual</span>
       <span class="chip on" data-f="estado">Estado</span>
       <span class="chip on" data-f="linkedin">LinkedIn</span>
-      <span class="chip" data-f="valoracion">Valoración</span>
-      <span class="chip" data-f="notas">Notas</span>
+      <span class="chip" data-f="telefono">Teléfono</span>
+      <span class="chip" data-f="email">Email</span>
+      <span class="chip" data-f="notas">Notas / Comentarios</span>
     </div>
-    <div style="font-size:11px;color:var(--t3);margin-top:8px">Haz clic en las columnas para activarlas o desactivarlas</div>
+    <div style="font-size:11px;color:var(--t3);margin-top:8px">Haz clic para activar o desactivar campos</div>
   </div>
 
-  <div id="if-prev" style="display:none">
+  <div id="if-prev">
     <div class="card" style="padding:0;overflow:hidden">
       <div style="background:#1e3a5f;padding:14px 18px;display:flex;align-items:center;justify-content:space-between">
-        <div style="color:#fff;font-size:13px;font-weight:700">Vista previa del informe</div>
+        <div style="color:#fff;font-size:13px;font-weight:700">Vista previa</div>
         <div id="if-count" style="background:rgba(255,255,255,.15);color:#fff;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600"></div>
       </div>
-      <div style="padding:16px">
-      <div style="overflow-x:auto">
-        <table class="ptbl" id="if-tbl" style="width:100%">
-          <thead></thead>
-          <tbody></tbody>
-        </table>
+      <div style="padding:16px;overflow-x:auto">
+        <table class="ptbl" id="if-tbl" style="width:100%"><thead></thead><tbody></tbody></table>
       </div>
     </div>
-  </div>
 
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-    <button class="btn-p" id="if-dl" onclick="dlExcel()" disabled>↓ Descargar Excel</button>
-    <span id="if-ok" style="font-size:12px;color:#15803D;display:none;font-weight:600">✓ Excel generado correctamente</span>
-    <span style="font-size:11px;color:var(--t3)">Formato maquetado con cabecera Talentia Search y colores corporativos</span>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px">
+      <button class="btn-p" id="if-dl-pdf" onclick="dlPDF()">&#128196; Descargar PDF</button>
+      <button class="btn-s" id="if-dl" onclick="dlExcel()">&#128202; Descargar Excel</button>
+      <span id="if-ok" style="font-size:12px;color:#15803D;display:none;font-weight:600">✓ Generado correctamente</span>
+    </div>
   </div>
 </div>
 
@@ -1196,111 +1192,67 @@ var DATOS=[
     "fechaInicio": "02/11/2025",
     "candidatos": [
       {
-        "id": 8558,
-        "nombre": "Imanol M.",
-        "cargo": "Asesor Comercial",
-        "empresa": "",
-        "linkedin": "https://www.linkedin.com/in/imanolm/",
-        "estado": "Descartado",
-        "telefono": "",
-        "email": "",
-        "notas": ""
-      },
-      {
-        "id": 8575,
-        "nombre": "Itziar San Martín Sáez",
-        "cargo": "Asesora Comercial",
-        "empresa": "",
-        "linkedin": "https://www.linkedin.com/in/itziar-san-mart%C3%ADn-s%C3%A1ez-986a80123",
-        "estado": "Descartado",
-        "telefono": "",
-        "email": "",
-        "notas": ""
-      },
-      {
-        "id": 8577,
-        "nombre": "Candidato 8577",
-        "cargo": "Asesor",
-        "empresa": "",
+        "id": 3049,
+        "nombre": "Mario Gallego Delgado",
+        "cargo": "Jefe de estudios y profesor FP Online",
+        "empresa": "MEDAC",
+        "estado": "Identificado",
         "linkedin": "",
-        "estado": "Stand by",
         "telefono": "",
         "email": "",
         "notas": ""
       },
       {
-        "id": 8578,
-        "nombre": "Candidato 8578",
-        "cargo": "Asesor",
-        "empresa": "",
+        "id": 840,
+        "nombre": "Sergio Cámbara Fernández",
+        "cargo": "Responsable FP / Director nacional de ventas",
+        "empresa": "Devante / Master D",
+        "estado": "Identificado",
         "linkedin": "",
-        "estado": "Contactado",
         "telefono": "",
         "email": "",
         "notas": ""
       },
       {
-        "id": 8582,
-        "nombre": "Candidato 8582",
-        "cargo": "Asesor",
-        "empresa": "",
+        "id": 8485,
+        "nombre": "Pablo Burón",
+        "cargo": "Director de negocio online FP",
+        "empresa": "UAX",
+        "estado": "Identificado",
         "linkedin": "",
-        "estado": "No interesado",
         "telefono": "",
         "email": "",
         "notas": ""
       },
       {
-        "id": 8584,
-        "nombre": "Candidato 8584",
-        "cargo": "Asesor",
-        "empresa": "",
+        "id": 6792,
+        "nombre": "Pepe Fraile de Valle",
+        "cargo": "Jefe de Estudios",
+        "empresa": "Caser Academy",
+        "estado": "Identificado",
         "linkedin": "",
-        "estado": "Contactado",
         "telefono": "",
         "email": "",
         "notas": ""
       },
       {
-        "id": 8587,
-        "nombre": "Candidato 8587",
-        "cargo": "Asesor",
-        "empresa": "",
+        "id": 1566,
+        "nombre": "Héctor Alonso-Misol Gerlache",
+        "cargo": "Dirección y Desarrollo de Proyectos FP",
+        "empresa": "UNIR",
+        "estado": "Identificado",
         "linkedin": "",
-        "estado": "No interesado",
         "telefono": "",
         "email": "",
         "notas": ""
       },
       {
-        "id": 8588,
-        "nombre": "Candidato 8588",
-        "cargo": "Asesor",
-        "empresa": "",
+        "id": 321,
+        "nombre": "Irene Garcia Satostegui",
+        "cargo": "Jefe de Estudios",
+        "empresa": "CEAC",
+        "estado": "Identificado",
         "linkedin": "",
-        "estado": "Contactado",
-        "telefono": "",
-        "email": "",
-        "notas": ""
-      },
-      {
-        "id": 8589,
-        "nombre": "Candidato 8589",
-        "cargo": "Asesor",
-        "empresa": "",
-        "linkedin": "",
-        "estado": "Contactado",
-        "telefono": "",
-        "email": "",
-        "notas": ""
-      },
-      {
-        "id": 8590,
-        "nombre": "Candidato 8590",
-        "cargo": "Asesor",
-        "empresa": "",
-        "linkedin": "",
-        "estado": "No interesado",
         "telefono": "",
         "email": "",
         "notas": ""
@@ -1317,7 +1269,63 @@ var DATOS=[
     "sector": "Educación",
     "estado": "Pausado",
     "fechaInicio": "20/10/2025",
-    "candidatos": []
+    "candidatos": [
+      {
+        "id": 519,
+        "nombre": "Jorge Acebes Sanchez",
+        "cargo": "Vicedecano de Internacionalización CC Salud",
+        "empresa": "Universidad Francisco de Vitoria",
+        "estado": "Identificado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 511,
+        "nombre": "Sergio González Cervantes",
+        "cargo": "Director de los Grados en Enfermería y Fisioterapia",
+        "empresa": "Universidad Villanueva",
+        "estado": "Avanza",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 8429,
+        "nombre": "Luis Palomeque Del Cerro",
+        "cargo": "Director Académico",
+        "empresa": "Escuela de Osteopatía de Madrid",
+        "estado": "Identificado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 8484,
+        "nombre": "Antonio Sanchez Pato",
+        "cargo": "Director del Área de CC del Deporte",
+        "empresa": "UNIR",
+        "estado": "Identificado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 422,
+        "nombre": "Jesús Guodemar Pérez",
+        "cargo": "Director de Desarrollo y Proyectos Universitarios",
+        "empresa": "Institutos Nebrija",
+        "estado": "Identificado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      }
+    ]
   },
   {
     "id": 208,
@@ -1329,7 +1337,118 @@ var DATOS=[
     "sector": "Educación",
     "estado": "Pausado",
     "fechaInicio": "16/10/2025",
-    "candidatos": []
+    "candidatos": [
+      {
+        "id": 8202,
+        "nombre": "Karla Gómez Teixeira",
+        "cargo": "Product Manager",
+        "empresa": "Universidad Europea",
+        "estado": "Descartado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 7035,
+        "nombre": "Jacobo Caballero Olmedo",
+        "cargo": "Marketing Manager",
+        "empresa": "Metrodora Education (CESIF/ISEP)",
+        "estado": "Descartado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 4216,
+        "nombre": "Borja Peigneux d'Egmont Casañ",
+        "cargo": "Director de ventas y marketing",
+        "empresa": "Cerem Global Business School",
+        "estado": "Descartado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 334,
+        "nombre": "Fernando Moscoso",
+        "cargo": "Marketing Manager",
+        "empresa": "Universidad Europea",
+        "estado": "Descartado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 393,
+        "nombre": "Estibaliz Olivan Alonso",
+        "cargo": "Senior Product Manager",
+        "empresa": "Universidad Europea",
+        "estado": "No interesado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 458,
+        "nombre": "Alejandra Llinás",
+        "cargo": "Product Marketing Manager",
+        "empresa": "Global Alumni",
+        "estado": "No interesado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 92,
+        "nombre": "Alejandra Moraga Gaya",
+        "cargo": "Product Manager",
+        "empresa": "Universidad Europea",
+        "estado": "No interesado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 4062,
+        "nombre": "Alejandro Pintado Garcia",
+        "cargo": "Product Manager",
+        "empresa": "Adeslas",
+        "estado": "Stand by",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 107,
+        "nombre": "Alvaro Diezma",
+        "cargo": "Senior Product Manager",
+        "empresa": "Universidad Francisco de Vitoria",
+        "estado": "Contactado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      },
+      {
+        "id": 6207,
+        "nombre": "Ana Oroz Sanjuán",
+        "cargo": "Senior Product Marketing Manager",
+        "empresa": "Universidad Europea",
+        "estado": "No interesado",
+        "linkedin": "",
+        "telefono": "",
+        "email": "",
+        "notas": ""
+      }
+    ]
   },
   {
     "id": 215,
@@ -1575,7 +1694,7 @@ function renderPrev(){
     return va<vb?-1:va>vb?1:0;
   });
   document.getElementById("if-count").textContent=cands.length+" candidato"+(cands.length!==1?"s":"");
-  var L={estado:"Estado",nombre:"Nombre",apellidos:"Apellidos",cargo:"Cargo actual",empresa:"Empresa actual",linkedin:"LinkedIn",valoracion:"Valoración",notas:"Notas"};
+  var L={estado:"Estado",nombre:"Nombre",cargo:"Cargo actual",empresa:"Empresa actual",linkedin:"LinkedIn",telefono:"Teléfono",email:"Email",notas:"Notas / Comentarios"};
   var flds=Array.from(document.querySelectorAll("#if-ch .chip.on")).map(function(c){return{k:c.dataset.f,l:L[c.dataset.f]};});
   document.querySelector("#if-tbl thead").innerHTML="<tr>"+flds.map(function(f){return"<th style='background:#1e3a5f;color:#fff;padding:10px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap'>"+f.l+"</th>";}).join("")+"</tr>";
   document.querySelector("#if-tbl tbody").innerHTML=cands.map(function(c,i){
@@ -1595,6 +1714,88 @@ function renderPrev(){
   }).join("");
   document.getElementById("if-dl").disabled=false;
 }
+
+function dlPDF(){
+  var id=parseInt(document.getElementById("if-p").value);
+  var p=procesos.find(function(x){return x.id===id;});
+  var cands=getIfC();
+  if(!p||!cands.length){alert("Selecciona un proceso con candidatos");return;}
+  var cli=document.getElementById("if-c").value||p.cliente||"";
+  var fecha=document.getElementById("if-f").value||new Date().toLocaleDateString("es-ES");
+  var L={estado:"Estado",nombre:"Nombre",cargo:"Cargo actual",empresa:"Empresa actual",linkedin:"LinkedIn",telefono:"Teléfono",email:"Email",notas:"Notas / Comentarios"};
+  var flds=Array.from(document.querySelectorAll("#if-ch .chip.on")).map(function(c){return{k:c.dataset.f,l:L[c.dataset.f]||c.dataset.f};});
+  var ord=document.getElementById("if-ord")?document.getElementById("if-ord").value:"nombre";
+  cands=cands.slice().sort(function(a,b){var va=(a[ord]||"").toLowerCase(),vb=(b[ord]||"").toLowerCase();return va<vb?-1:va>vb?1:0;});
+  var ECOL={"Avanza":"#15803D","Posible":"#1D4ED8","Identificado":"#475569","Contactado":"#D97706","Entrevistado por el cliente":"#7C3AED","Stand by":"#6B7280","No interesado":"#DC2626","Descartado":"#DC2626","Finalista":"#065F46","Ganador":"#064E3B"};
+  var EBCOL={"Avanza":"#DCFCE7","Posible":"#DBEAFE","Identificado":"#F1F5F9","Contactado":"#FEF3C7","Entrevistado por el cliente":"#EDE9FE","Stand by":"#F3F4F6","No interesado":"#FEE2E2","Descartado":"#FEE2E2","Finalista":"#D1FAE5","Ganador":"#A7F3D0"};
+  var rows=cands.map(function(c,i){
+    return "<tr style=\"background:"+(i%2===0?"#ffffff":"#F8FAFF")+";border-bottom:1px solid #E2E8F0\">"+
+      flds.map(function(f){
+        var v=c[f.k]||"";
+        var cell="";
+        if(f.k==="estado"&&v){
+          var col=ECOL[v]||"#475569",bg=EBCOL[v]||"#F3F4F6";
+          cell="<span style=\"display:inline-block;background:"+bg+";color:"+col+";padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap\">"+v+"</span>";
+        } else if(f.k==="linkedin"&&v){
+          cell="<a href=\""+v+"\" style=\"color:#2878B5;font-weight:600;font-size:11px;text-decoration:none\">↗ Ver perfil</a>";
+        } else if(f.k==="nombre"){
+          cell="<strong style=\"color:#0F1923;font-size:13px\">"+v+"</strong>";
+        } else if(f.k==="cargo"){
+          cell="<span style=\"color:#475569;font-size:12px\">"+v+"</span>";
+        } else if(f.k==="empresa"){
+          cell="<span style=\"color:#1e3a5f;font-weight:700;font-size:12px\">"+v+"</span>";
+        } else if(f.k==="notas"){
+          cell="<span style=\"color:#64748B;font-size:11px;font-style:italic\">"+v+"</span>";
+        } else {
+          cell="<span style=\"color:#374151;font-size:12px\">"+v+"</span>";
+        }
+        return "<td style=\"padding:11px 14px;vertical-align:middle\">"+cell+"</td>";
+      }).join("")+"</tr>";
+  }).join("");
+  var thCols=flds.map(function(f){return"<th style=\"background:#1e3a5f;color:#ffffff;padding:10px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1)\">" +f.l+"</th>";}).join("");
+  var html="<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\"><title>Informe "+p.nombre+"</title>"
+    +"<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:#fff;color:#1e293b;-webkit-print-color-adjust:exact;print-color-adjust:exact}"
+    +"@page{size:A4 landscape;margin:15mm 12mm}"
+    +"@media print{.no-print{display:none!important}.page-break{page-break-before:always}}"
+    +".wrap{max-width:1100px;margin:0 auto;padding:0}"
+    +".hdr{background:#1e3a5f;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;border-radius:8px 8px 0 0}"
+    +".hdr-left{display:flex;align-items:center;gap:16px}"
+    +".hdr-logo{height:42px}"
+    +".hdr-title{color:#fff}"
+    +".hdr-title h1{font-size:17px;font-weight:800;letter-spacing:.01em}"
+    +".hdr-title p{font-size:11px;color:rgba(255,255,255,.7);margin-top:3px}"
+    +".hdr-right{text-align:right;color:rgba(255,255,255,.8)}"
+    +".hdr-right .cli{font-size:14px;font-weight:700;color:#fff}"
+    +".hdr-right .dat{font-size:11px;margin-top:3px}"
+    +".meta{background:#F0F6FF;border:1px solid #BFDBFE;border-top:none;padding:10px 28px;display:flex;gap:24px;align-items:center;font-size:11.5px;color:#1e3a5f}"
+    +".meta span{font-weight:700}"
+    +".tbl-wrap{border:1px solid #E2E8F0;border-top:none;border-radius:0 0 8px 8px;overflow:hidden}"
+    +"table{width:100%;border-collapse:collapse}"
+    +"tbody tr:hover{background:#EFF6FF!important}"
+    +".footer{margin-top:20px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#94A3B8;border-top:1px solid #E2E8F0;padding-top:10px}"
+    +".btn-print{background:#2878B5;color:#fff;border:none;padding:10px 22px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;margin:16px 0;display:flex;align-items:center;gap:6px}"
+    +".btn-print:hover{background:#1e3a5f}"
+    +"</style></head><body>"
+    +"<div class=\"no-print\" style=\"background:#f8fafc;padding:12px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0\">"
+    +"<button class=\"btn-print\" onclick=\"window.print()\">🖨️ Imprimir / Guardar como PDF</button>"
+    +"<span style=\"font-size:12px;color:#64748b\">Abre el diálogo de impresión del navegador. Selecciona <strong>Guardar como PDF</strong> para descargarlo.</span>"
+    +"</div>"
+    +"<div class=\"wrap\">"
+    +"<div class=\"hdr\">"
+    +"<div class=\"hdr-left\"><img src=\""+LG+"\" class=\"hdr-logo\" alt=\"Talentia Search\"><div class=\"hdr-title\"><h1>"+p.nombre+"</h1><p>Informe de candidatos · Talentia Search</p></div></div>"
+    +"<div class=\"hdr-right\"><div class=\"cli\">"+cli+"</div><div class=\"dat\">"+fecha+"</div></div>"
+    +"</div>"
+    +"<div class=\"meta\">Proceso: <span>"+p.nombre+"</span>&nbsp;&nbsp;|&nbsp;&nbsp;Total candidatos: <span>"+cands.length+"</span>"+(p.salario?"&nbsp;&nbsp;|&nbsp;&nbsp;Retribución: <span>"+p.salario+"</span>":"")+(p.ubicacion?"&nbsp;&nbsp;|&nbsp;&nbsp;Ubicación: <span>"+p.ubicacion+"</span>":"")+"</div>"
+    +"<div class=\"tbl-wrap\"><table><thead><tr>"+thCols+"</tr></thead><tbody>"+rows+"</tbody></table></div>"
+    +"<div class=\"footer\"><span>Talentia Search · Rocío Medina Martín · C/ Fernando Ruiz de León nº2 K · 28224 Pozuelo de Alarcón · 609 087 725</span><span>Confidencial · Uso exclusivo del cliente</span></div>"
+    +"</div></body></html>";
+  var w=window.open("","_blank","width=1200,height=800");
+  w.document.write(html);
+  w.document.close();
+  document.getElementById("if-ok").style.display="inline";
+  setTimeout(function(){document.getElementById("if-ok").style.display="none";},3000);
+}
+
 function dlExcel(){
   if(typeof XLSX==="undefined")return;
   var id=parseInt(document.getElementById("if-p").value);var p=procesos.find(function(x){return x.id===id;});var cands=getIfC();
