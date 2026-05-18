@@ -1721,75 +1721,129 @@ function dlPDF(){
   var cands=getIfC();
   if(!p||!cands.length){alert("Selecciona un proceso con candidatos");return;}
   var cli=document.getElementById("if-c").value||p.cliente||"";
-  var fecha=document.getElementById("if-f").value||new Date().toLocaleDateString("es-ES");
-  var L={estado:"Estado",nombre:"Nombre",cargo:"Cargo actual",empresa:"Empresa actual",linkedin:"LinkedIn",telefono:"Teléfono",email:"Email",notas:"Notas / Comentarios"};
-  var flds=Array.from(document.querySelectorAll("#if-ch .chip.on")).map(function(c){return{k:c.dataset.f,l:L[c.dataset.f]||c.dataset.f};});
+  var fv=document.getElementById("if-f").value;
+  var fecha=fv?new Date(fv+"T12:00").toLocaleDateString("es-ES",{day:"2-digit",month:"long",year:"numeric"}):new Date().toLocaleDateString("es-ES",{day:"2-digit",month:"long",year:"numeric"});
+  var flds=Array.from(document.querySelectorAll("#if-ch .chip.on")).map(function(c){return c.dataset.f;});
   var ord=document.getElementById("if-ord")?document.getElementById("if-ord").value:"nombre";
   cands=cands.slice().sort(function(a,b){var va=(a[ord]||"").toLowerCase(),vb=(b[ord]||"").toLowerCase();return va<vb?-1:va>vb?1:0;});
-  var ECOL={"Avanza":"#15803D","Posible":"#1D4ED8","Identificado":"#475569","Contactado":"#D97706","Entrevistado por el cliente":"#7C3AED","Stand by":"#6B7280","No interesado":"#DC2626","Descartado":"#DC2626","Finalista":"#065F46","Ganador":"#064E3B"};
-  var EBCOL={"Avanza":"#DCFCE7","Posible":"#DBEAFE","Identificado":"#F1F5F9","Contactado":"#FEF3C7","Entrevistado por el cliente":"#EDE9FE","Stand by":"#F3F4F6","No interesado":"#FEE2E2","Descartado":"#FEE2E2","Finalista":"#D1FAE5","Ganador":"#A7F3D0"};
-  var rows=cands.map(function(c,i){
-    return "<tr style=\"background:"+(i%2===0?"#ffffff":"#F8FAFF")+";border-bottom:1px solid #E2E8F0\">"+
-      flds.map(function(f){
-        var v=c[f.k]||"";
-        var cell="";
-        if(f.k==="estado"&&v){
-          var col=ECOL[v]||"#475569",bg=EBCOL[v]||"#F3F4F6";
-          cell="<span style=\"display:inline-block;background:"+bg+";color:"+col+";padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;white-space:nowrap\">"+v+"</span>";
-        } else if(f.k==="linkedin"&&v){
-          cell="<a href=\""+v+"\" style=\"color:#2878B5;font-weight:600;font-size:11px;text-decoration:none\">↗ Ver perfil</a>";
-        } else if(f.k==="nombre"){
-          cell="<strong style=\"color:#0F1923;font-size:13px\">"+v+"</strong>";
-        } else if(f.k==="cargo"){
-          cell="<span style=\"color:#475569;font-size:12px\">"+v+"</span>";
-        } else if(f.k==="empresa"){
-          cell="<span style=\"color:#1e3a5f;font-weight:700;font-size:12px\">"+v+"</span>";
-        } else if(f.k==="notas"){
-          cell="<span style=\"color:#64748B;font-size:11px;font-style:italic\">"+v+"</span>";
-        } else {
-          cell="<span style=\"color:#374151;font-size:12px\">"+v+"</span>";
-        }
-        return "<td style=\"padding:11px 14px;vertical-align:middle\">"+cell+"</td>";
-      }).join("")+"</tr>";
+
+  var ECOL={"Avanza":"#166534","Posible":"#1e40af","Identificado":"#374151","Contactado":"#92400e","Entrevistado por el cliente":"#5b21b6","Stand by":"#4b5563","No interesado":"#991b1b","Descartado":"#991b1b","Finalista":"#065f46","Ganador":"#064e3b"};
+  var EBCOL={"Avanza":"#dcfce7","Posible":"#dbeafe","Identificado":"#f3f4f6","Contactado":"#fef3c7","Entrevistado por el cliente":"#ede9fe","Stand by":"#f9fafb","No interesado":"#fee2e2","Descartado":"#fee2e2","Finalista":"#d1fae5","Ganador":"#a7f3d0"};
+  var EBOR={"Avanza":"#86efac","Posible":"#93c5fd","Identificado":"#d1d5db","Contactado":"#fcd34d","Entrevistado por el cliente":"#c4b5fd","Stand by":"#e5e7eb","No interesado":"#fca5a5","Descartado":"#fca5a5","Finalista":"#6ee7b7","Ganador":"#34d399"};
+
+  function ini(n){var p=(n||"").trim().split(/\s+/);return((p[0]||"")[0]+(p[p.length-1]||"")[0]).toUpperCase();}
+  function avatarColor(n){var colors=["#2878B5","#1e3a5f","#0369a1","#0c4a6e","#1d4ed8","#1e40af","#3730a3","#4338ca"];var h=0;for(var i=0;i<(n||"").length;i++)h=(h*31+n.charCodeAt(i))&0xffffffff;return colors[Math.abs(h)%colors.length];}
+
+  var cards=cands.map(function(c,i){
+    var estado=c.estado||"";
+    var ecol=ECOL[estado]||"#374151";
+    var ebg=EBCOL[estado]||"#f3f4f6";
+    var ebor=EBOR[estado]||"#d1d5db";
+    var av=ini(c.nombre);
+    var avc=avatarColor(c.nombre);
+    var badge=estado?'<span style="display:inline-block;background:'+ebg+';color:'+ecol+';border:1px solid '+ebor+';padding:3px 11px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase">'+estado+'</span>':"";
+
+    var extras=[];
+    if(flds.indexOf("telefono")>-1&&c.telefono)extras.push('<span style="color:#64748b;font-size:11px">📞 '+c.telefono+'</span>');
+    if(flds.indexOf("email")>-1&&c.email)extras.push('<span style="color:#64748b;font-size:11px">✉ '+c.email+'</span>');
+    if(flds.indexOf("notas")>-1&&c.notas)extras.push('<div style="margin-top:8px;padding:8px 10px;background:#f8fafc;border-left:3px solid #2878B5;border-radius:0 4px 4px 0;font-size:10.5px;color:#475569;line-height:1.5;font-style:italic">'+c.notas+'</div>');
+
+    var liBtn=flds.indexOf("linkedin")>-1&&c.linkedin?'<a href="'+c.linkedin+'" style="display:inline-flex;align-items:center;gap:4px;background:#0077b5;color:#fff;padding:5px 12px;border-radius:5px;font-size:10px;font-weight:700;text-decoration:none;margin-top:auto">&#128279; LinkedIn</a>':"";
+
+    return '<div style="break-inside:avoid;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:0;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.07)">'
+      +'<div style="background:linear-gradient(135deg,'+avc+' 0%,#1e3a5f 100%);padding:16px 16px 14px;display:flex;align-items:center;gap:12px">'
+      +'<div style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,.5)">'+av+'</div>'
+      +'<div style="min-width:0;flex:1">'
+      +(flds.indexOf("nombre")>-1?'<div style="font-size:13.5px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(c.nombre||"")+'</div>':"")
+      +(flds.indexOf("cargo")>-1&&c.cargo?'<div style="font-size:10.5px;color:rgba(255,255,255,.8);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+c.cargo+'</div>':"")
+      +'</div>'
+      +(flds.indexOf("estado")>-1?'<div style="flex-shrink:0">'+badge+'</div>':"")
+      +'</div>'
+      +'<div style="padding:12px 14px 14px;flex:1;display:flex;flex-direction:column;gap:6px">'
+      +(flds.indexOf("empresa")>-1&&c.empresa?'<div style="display:flex;align-items:center;gap:7px"><span style="font-size:15px">🏢</span><span style="font-size:12px;font-weight:700;color:#1e3a5f;overflow:hidden;text-overflow:ellipsis">'+c.empresa+'</span></div>':"")
+      +(extras.length?'<div style="display:flex;flex-direction:column;gap:4px">'+extras.join("")+'</div>':"")
+      +(liBtn?'<div style="margin-top:8px">'+liBtn+'</div>':"")
+      +'</div>'
+      +'</div>';
   }).join("");
-  var thCols=flds.map(function(f){return"<th style=\"background:#1e3a5f;color:#ffffff;padding:10px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1)\">" +f.l+"</th>";}).join("");
-  var html="<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"UTF-8\"><title>Informe "+p.nombre+"</title>"
-    +"<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;background:#fff;color:#1e293b;-webkit-print-color-adjust:exact;print-color-adjust:exact}"
-    +"@page{size:A4 landscape;margin:15mm 12mm}"
-    +"@media print{.no-print{display:none!important}.page-break{page-break-before:always}}"
-    +".wrap{max-width:1100px;margin:0 auto;padding:0}"
-    +".hdr{background:#1e3a5f;padding:22px 28px;display:flex;align-items:center;justify-content:space-between;border-radius:8px 8px 0 0}"
-    +".hdr-left{display:flex;align-items:center;gap:16px}"
-    +".hdr-logo{height:42px}"
-    +".hdr-title{color:#fff}"
-    +".hdr-title h1{font-size:17px;font-weight:800;letter-spacing:.01em}"
-    +".hdr-title p{font-size:11px;color:rgba(255,255,255,.7);margin-top:3px}"
-    +".hdr-right{text-align:right;color:rgba(255,255,255,.8)}"
-    +".hdr-right .cli{font-size:14px;font-weight:700;color:#fff}"
-    +".hdr-right .dat{font-size:11px;margin-top:3px}"
-    +".meta{background:#F0F6FF;border:1px solid #BFDBFE;border-top:none;padding:10px 28px;display:flex;gap:24px;align-items:center;font-size:11.5px;color:#1e3a5f}"
-    +".meta span{font-weight:700}"
-    +".tbl-wrap{border:1px solid #E2E8F0;border-top:none;border-radius:0 0 8px 8px;overflow:hidden}"
-    +"table{width:100%;border-collapse:collapse}"
-    +"tbody tr:hover{background:#EFF6FF!important}"
-    +".footer{margin-top:20px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#94A3B8;border-top:1px solid #E2E8F0;padding-top:10px}"
-    +".btn-print{background:#2878B5;color:#fff;border:none;padding:10px 22px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;margin:16px 0;display:flex;align-items:center;gap:6px}"
-    +".btn-print:hover{background:#1e3a5f}"
-    +"</style></head><body>"
-    +"<div class=\"no-print\" style=\"background:#f8fafc;padding:12px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #e2e8f0\">"
-    +"<button class=\"btn-print\" onclick=\"window.print()\">🖨️ Imprimir / Guardar como PDF</button>"
-    +"<span style=\"font-size:12px;color:#64748b\">Abre el diálogo de impresión del navegador. Selecciona <strong>Guardar como PDF</strong> para descargarlo.</span>"
-    +"</div>"
-    +"<div class=\"wrap\">"
-    +"<div class=\"hdr\">"
-    +"<div class=\"hdr-left\"><img src=\""+LG+"\" class=\"hdr-logo\" alt=\"Talentia Search\"><div class=\"hdr-title\"><h1>"+p.nombre+"</h1><p>Informe de candidatos · Talentia Search</p></div></div>"
-    +"<div class=\"hdr-right\"><div class=\"cli\">"+cli+"</div><div class=\"dat\">"+fecha+"</div></div>"
-    +"</div>"
-    +"<div class=\"meta\">Proceso: <span>"+p.nombre+"</span>&nbsp;&nbsp;|&nbsp;&nbsp;Total candidatos: <span>"+cands.length+"</span>"+(p.salario?"&nbsp;&nbsp;|&nbsp;&nbsp;Retribución: <span>"+p.salario+"</span>":"")+(p.ubicacion?"&nbsp;&nbsp;|&nbsp;&nbsp;Ubicación: <span>"+p.ubicacion+"</span>":"")+"</div>"
-    +"<div class=\"tbl-wrap\"><table><thead><tr>"+thCols+"</tr></thead><tbody>"+rows+"</tbody></table></div>"
-    +"<div class=\"footer\"><span>Talentia Search · Rocío Medina Martín · C/ Fernando Ruiz de León nº2 K · 28224 Pozuelo de Alarcón · 609 087 725</span><span>Confidencial · Uso exclusivo del cliente</span></div>"
-    +"</div></body></html>";
-  var w=window.open("","_blank","width=1200,height=800");
+
+  var statCounts={};
+  cands.forEach(function(c){var e=c.estado||"Sin estado";statCounts[e]=(statCounts[e]||0)+1;});
+  var statsHtml=Object.keys(statCounts).map(function(e){
+    var ecol=ECOL[e]||"#374151";var ebg=EBCOL[e]||"#f3f4f6";var ebor=EBOR[e]||"#d1d5db";
+    return '<div style="display:inline-flex;align-items:center;gap:6px;background:'+ebg+';border:1px solid '+ebor+';border-radius:20px;padding:4px 12px">'
+      +'<span style="font-size:10px;font-weight:700;color:'+ecol+'">'+e+'</span>'
+      +'<span style="font-size:11px;font-weight:800;color:'+ecol+'">'+statCounts[e]+'</span>'
+      +'</div>';
+  }).join("");
+
+  var html='<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">'
+    +'<title>Informe '+p.nombre+' · Talentia Search</title>'
+    +'<style>'
+    +'*{box-sizing:border-box;margin:0;padding:0}'
+    +'body{font-family:Arial,Helvetica,sans-serif;background:#f1f5f9;color:#1e293b;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    +'@page{size:A4;margin:0}'
+    +'@media print{'
+    +'.no-print{display:none!important}'
+    +'body{background:#fff}'
+    +'.page{padding:14mm 14mm 10mm;min-height:297mm}'
+    +'}'
+    +'@media screen{'
+    +'.page{max-width:800px;margin:0 auto;padding:24px}'
+    +'}'
+    +'.page{background:#fff}'
+    +'.cover{background:linear-gradient(135deg,#1e3a5f 0%,#2878B5 60%,#3b92d4 100%);padding:32px 36px 28px;position:relative;overflow:hidden}'
+    +'.cover::after{content:"";position:absolute;right:-60px;top:-60px;width:300px;height:300px;border-radius:50%;background:rgba(255,255,255,.04)}'
+    +'.cover::before{content:"";position:absolute;right:60px;bottom:-80px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04)}'
+    +'.logo-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}'
+    +'.logo-img{height:38px;filter:brightness(10)}'
+    +'.cover-date{color:rgba(255,255,255,.7);font-size:11px;text-align:right}'
+    +'.cover-date strong{display:block;color:#fff;font-size:12px}'
+    +'.proceso-title{font-size:24px;font-weight:900;color:#fff;letter-spacing:-.01em;line-height:1.2}'
+    +'.proceso-sub{font-size:13px;color:rgba(255,255,255,.75);margin-top:6px}'
+    +'.cover-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}'
+    +'.cover-chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600}'
+    +'.stats-bar{background:#fff;border-bottom:2px solid #e2e8f0;padding:14px 36px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}'
+    +'.stats-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-right:6px}'
+    +'.grid{padding:20px 36px 28px;display:grid;grid-template-columns:repeat(2,1fr);gap:14px}'
+    +'@media print{.grid{grid-template-columns:repeat(2,1fr);gap:10px;padding:14px 28px 20px}}'
+    +'.footer{border-top:1px solid #e2e8f0;padding:12px 36px;display:flex;justify-content:space-between;align-items:center;background:#f8fafc}'
+    +'.footer-left{font-size:9.5px;color:#94a3b8;line-height:1.6}'
+    +'.footer-right{font-size:9.5px;color:#cbd5e1;font-weight:600;text-align:right}'
+    +'.btn-print{background:#2878B5;color:#fff;border:none;padding:11px 24px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;letter-spacing:.01em}'
+    +'.btn-print:hover{background:#1e3a5f}'
+    +'</style>'
+    +'</head><body>'
+    +'<div class="no-print" style="background:#1e3a5f;padding:12px 24px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100">'
+    +'<button class="btn-print" onclick="window.print()">🖨 Imprimir · Guardar PDF</button>'
+    +'<span style="font-size:12px;color:rgba(255,255,255,.65)">En el diálogo de impresión selecciona <strong style="color:#fff">Guardar como PDF</strong></span>'
+    +'</div>'
+    +'<div class="page">'
+    +'<div class="cover">'
+    +'<div class="logo-row">'
+    +'<img src="'+LG+'" class="logo-img" alt="Talentia Search">'
+    +'<div class="cover-date"><strong>'+fecha+'</strong>Confidencial · '+cli+'</div>'
+    +'</div>'
+    +'<div class="proceso-title">'+p.nombre+'</div>'
+    +'<div class="proceso-sub">Informe de candidatos · Talentia Search</div>'
+    +'<div class="cover-chips">'
+    +'<span class="cover-chip">👥 '+cands.length+' candidato'+(cands.length!==1?"s":"")+'</span>'
+    +(p.salario?'<span class="cover-chip">💰 '+p.salario+'</span>':"")
+    +(p.ubicacion?'<span class="cover-chip">📍 '+p.ubicacion+'</span>':"")
+    +(p.sector?'<span class="cover-chip">🏭 '+p.sector+'</span>':"")
+    +'</div>'
+    +'</div>'
+    +'<div class="stats-bar"><span class="stats-label">Estado:</span>'+statsHtml+'</div>'
+    +'<div class="grid">'+cards+'</div>'
+    +'<div class="footer">'
+    +'<div class="footer-left">Talentia Search · Rocío Medina Martín<br>C/ Fernando Ruiz de León nº 2, K · 28224 Pozuelo de Alarcón, Madrid · 609 087 725</div>'
+    +'<div class="footer-right">Documento confidencial<br>Uso exclusivo del cliente</div>'
+    +'</div>'
+    +'</div>'
+    +'</body></html>';
+
+  var w=window.open("","_blank","width=900,height=900");
+  if(!w){alert("Activa las ventanas emergentes para este sitio");return;}
   w.document.write(html);
   w.document.close();
   document.getElementById("if-ok").style.display="inline";
