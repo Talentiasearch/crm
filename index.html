@@ -1861,67 +1861,64 @@ function dlExcel(){
   var L={estado:"Estado",nombre:"Nombre",cargo:"Cargo actual",empresa:"Empresa actual",linkedin:"LinkedIn",telefono:"Teléfono",email:"Email",notas:"Notas / Comentarios"};
   var flds=Array.from(document.querySelectorAll("#if-ch .chip.on")).map(function(c){return{k:c.dataset.f,l:L[c.dataset.f]||c.dataset.f};});
 
-  // Order of status groups
-  var ESTADO_ORDER=["Ganador","Finalista","Entrevistado por el cliente","Avanza","Posible","Contactado","Identificado","Stand by","No interesado","Descartado",""];
-  var ECOL={"Avanza":"#166534","Posible":"#1e40af","Identificado":"#374151","Contactado":"#92400e","Entrevistado por el cliente":"#5b21b6","Stand by":"#4b5563","No interesado":"#991b1b","Descartado":"#7f1d1d","Finalista":"#065f46","Ganador":"#064e3b"};
-  var EBCOL={"Avanza":"#dcfce7","Posible":"#dbeafe","Identificado":"#f1f5f9","Contactado":"#fef3c7","Entrevistado por el cliente":"#ede9fe","Stand by":"#f9fafb","No interesado":"#fee2e2","Descartado":"#fef2f2","Finalista":"#d1fae5","Ganador":"#a7f3d0"};
-  var EHEADER={"Avanza":"#15803d","Posible":"#1d4ed8","Identificado":"#475569","Contactado":"#b45309","Entrevistado por el cliente":"#6d28d9","Stand by":"#6b7280","No interesado":"#b91c1c","Descartado":"#991b1b","Finalista":"#047857","Ganador":"#065f46"};
+  // Estado: color del texto (sin fondo), igual que en el ejemplo
+  var ETXT={"Ganador":"#064e3b","Finalista":"#065f46","Entrevistado por el cliente":"#5b21b6","Avanza":"#166534","Posible":"#1d4ed8","Contactado":"#b45309","Identificado":"#374151","Stand by":"#6b7280","No interesado":"#b91c1c","Descartado":"#991b1b"};
+  var EBOLD={"Contactado":true,"No interesado":true,"Descartado":true,"Avanza":true,"Finalista":true,"Ganador":true,"Entrevistado por el cliente":true,"Posible":true};
 
-  // Group candidates by status
+  // Orden de grupos de estado
+  var ORDEN_ESTADO=["Ganador","Finalista","Entrevistado por el cliente","Avanza","Posible","Contactado","Identificado","Stand by","No interesado","Descartado",""];
+
+  // Agrupar y ordenar por nombre dentro de cada grupo
   var groups={};
-  cands.forEach(function(c){
-    var e=c.estado||"";
-    if(!groups[e])groups[e]=[];
-    groups[e].push(c);
-  });
-  // Sort within each group by nombre
-  Object.keys(groups).forEach(function(e){
-    groups[e].sort(function(a,b){return(a.nombre||"").localeCompare(b.nombre||"","es");});
-  });
+  cands.forEach(function(c){var e=c.estado||"";if(!groups[e])groups[e]=[];groups[e].push(c);});
+  Object.keys(groups).forEach(function(e){groups[e].sort(function(a,b){return(a.nombre||"").localeCompare(b.nombre||"","es");});});
 
-  var colWidths={estado:18,nombre:26,cargo:28,empresa:24,linkedin:32,telefono:16,email:24,notas:38};
-  var thCells=flds.map(function(f){
-    return '<td width="'+(colWidths[f.k]||18)+'%" style="background:#1e3a5f;color:#ffffff;font-family:Arial;font-size:10.5pt;font-weight:bold;padding:8px 12px;border:1px solid #15294a;text-align:left;white-space:nowrap">'+f.l+'</td>';
-  }).join("");
-
-  // Count by status for summary bar
+  // Resumen de estados para fila 3
   var statCounts={};
   cands.forEach(function(c){var e=c.estado||"Sin estado";statCounts[e]=(statCounts[e]||0)+1;});
-  var statRow=ESTADO_ORDER.filter(function(e){return statCounts[e];}).map(function(e){
-    var ecol=ECOL[e]||"#374151";var ebg=EBCOL[e]||"#f3f4f6";
-    return '<span style="background:'+ebg+';color:'+ecol+';font-family:Arial;font-size:9pt;font-weight:bold;padding:2px 9px;border-radius:3px;margin-right:5px">'+e+': '+statCounts[e]+'</span>';
+  var statSummary=ORDEN_ESTADO.filter(function(e){return statCounts[e];}).map(function(e){
+    var col=ETXT[e]||"#374151";var bld=EBOLD[e]?"font-weight:bold;":"";
+    return '<span style="font-family:Arial;font-size:9pt;'+bld+'color:'+col+'">'+e+': '+statCounts[e]+'</span>';
+  }).join('<span style="color:#94a3b8;margin:0 5px">·</span>');
+
+  // Cabeceras de columna
+  var thCells=flds.map(function(f){
+    return '<td style="background:#1e3a5f;color:#ffffff;font-family:Arial;font-size:10pt;font-weight:bold;padding:8px 12px;border:1px solid #15294a;text-align:left;white-space:nowrap">'+f.l+'</td>';
   }).join("");
 
-  // Build rows grouped by status
+  // Filas agrupadas por estado
   var allRows="";
-  ESTADO_ORDER.forEach(function(estado){
+  var rowCount=0;
+  ORDEN_ESTADO.forEach(function(estado){
     if(!groups[estado]||!groups[estado].length)return;
-    var hcol=EHEADER[estado]||"#334155";
-    var hbg=EBCOL[estado]||"#f8fafc";
-    // Group header row
-    allRows+='<tr><td colspan="'+flds.length+'" style="background:'+hbg+';color:'+hcol+';font-family:Arial;font-size:10pt;font-weight:bold;padding:7px 14px;border-top:2px solid '+hcol+';border-bottom:1px solid '+hcol+';border-left:4px solid '+hcol+';border-right:1px solid #dde3ec;letter-spacing:0.3px">'+(estado||"Sin estado").toUpperCase()+' &nbsp;<span style="font-size:9pt;font-weight:normal;opacity:0.8">('+groups[estado].length+')</span></td></tr>';
-    groups[estado].forEach(function(c,i){
-      var bg=i%2===0?"#ffffff":hbg;
+    var etxt=ETXT[estado]||"#374151";
+    groups[estado].forEach(function(c){
+      var bg=rowCount%2===0?"#ffffff":"#EEF4FB";
+      rowCount++;
       var cells=flds.map(function(f){
         var v=c[f.k]||"";
-        var style="background:"+bg+";font-family:Arial;font-size:10pt;padding:7px 12px;border:1px solid #dde3ec;vertical-align:middle;";
+        var base="background:"+bg+";font-family:Arial;font-size:10pt;padding:7px 12px;border:1px solid #dde3ec;vertical-align:middle;";
+        if(f.k==="nombre")
+          return '<td style="'+base+'font-weight:bold;color:#0f1923">'+v+'</td>';
+        if(f.k==="cargo")
+          return '<td style="'+base+'color:#555f6e">'+v+'</td>';
+        if(f.k==="empresa")
+          return '<td style="'+base+'font-weight:bold;color:#0f1923">'+v+'</td>';
         if(f.k==="estado"&&v){
-          var ecol=ECOL[v]||"#374151";var ebg2=EBCOL[v]||"#f3f4f6";
-          return '<td style="'+style+'"><span style="background:'+ebg2+';color:'+ecol+';font-size:9pt;font-weight:bold;padding:2px 10px;border-radius:3px;display:inline-block">'+v+'</span></td>';
+          var bld=EBOLD[v]?"font-weight:bold;":"";
+          return '<td style="'+base+bld+'color:'+etxt+'">'+v+'</td>';
         }
-        if(f.k==="nombre") return '<td style="'+style+'font-weight:bold;color:#0f1923;font-size:10.5pt">'+v+'</td>';
-        if(f.k==="cargo") return '<td style="'+style+'color:#475569">'+v+'</td>';
-        if(f.k==="empresa") return '<td style="'+style+'color:#1e3a5f;font-weight:bold">'+v+'</td>';
-        if(f.k==="linkedin"&&v) return '<td style="'+style+'"><a href="'+v+'" style="color:#2878B5;text-decoration:none;font-weight:bold;font-size:9.5pt">&#128279; Ver perfil</a></td>';
-        if(f.k==="notas") return '<td style="'+style+'color:#64748b;font-style:italic;font-size:9.5pt">'+v+'</td>';
-        return '<td style="'+style+'color:#374151">'+v+'</td>';
+        if(f.k==="linkedin"&&v)
+          return '<td style="'+base+'"><a href="'+v+'" style="color:#2878B5;text-decoration:underline;font-family:Arial;font-size:9.5pt">'+v+'</a></td>';
+        if(f.k==="notas")
+          return '<td style="'+base+'color:#64748b;font-style:italic;font-size:9.5pt">'+v+'</td>';
+        return '<td style="'+base+'color:#374151">'+v+'</td>';
       }).join("");
       allRows+='<tr>'+cells+'</tr>';
     });
-    // Small spacer after group
-    allRows+='<tr><td colspan="'+flds.length+'" style="height:6px;background:#f8fafc;border:none"></td></tr>';
   });
 
+  var ncols=flds.length;
   var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">'
     +'<head><meta charset="UTF-8">'
     +'<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>'
@@ -1931,20 +1928,36 @@ function dlExcel(){
     +'<style>td{mso-number-format:"\@";}</style>'
     +'</head><body>'
     +'<table style="border-collapse:collapse;width:100%;font-family:Arial">'
-    // Header: Talentia + proceso
-    +'<tr><td colspan="'+flds.length+'" style="background:#1e3a5f;color:#fff;font-family:Arial;font-size:15pt;font-weight:bold;padding:14px 18px;border:none;letter-spacing:0.5px">TALENTIA SEARCH</td></tr>'
-    +'<tr><td colspan="'+flds.length+'" style="background:#2878B5;color:#fff;font-family:Arial;font-size:11pt;font-weight:bold;padding:9px 18px;border:none">'+p.nombre+'</td></tr>'
-    +'<tr><td colspan="'+flds.length+'" style="background:#2878B5;color:rgba(255,255,255,0.85);font-family:Arial;font-size:9.5pt;padding:5px 18px 10px;border:none">'+(cli?'Cliente: '+cli+' &nbsp;·&nbsp; ':'')+fecha+(p.salario?' &nbsp;·&nbsp; Retribución: '+p.salario:'')+(p.ubicacion?' &nbsp;·&nbsp; '+p.ubicacion:'')+'</td></tr>'
-    // Stats row
-    +'<tr><td colspan="'+flds.length+'" style="background:#e8f0f8;color:#1e3a5f;font-family:Arial;font-size:9.5pt;padding:7px 18px;border-bottom:2px solid #2878B5">Total: <b>'+cands.length+' candidatos</b> &nbsp;·&nbsp; '+statRow+'</td></tr>'
-    // Spacer
-    +'<tr><td colspan="'+flds.length+'" style="height:8px;background:#f8fafc;border:none"></td></tr>'
-    // Column headers
+
+    // Fila 1: TALENTIA SEARCH · Informe de proceso
+    +'<tr><td colspan="'+ncols+'" style="background:#1e3a5f;color:#ffffff;font-family:Arial;font-size:13pt;font-weight:bold;padding:12px 16px;border:none;letter-spacing:0.3px">'
+    +'TALENTIA SEARCH <span style="font-weight:normal;color:rgba(255,255,255,0.75)"> · Informe de proceso</span>'
+    +'</td></tr>'
+
+    // Fila 2: nombre proceso · cliente · salario
+    +'<tr><td colspan="'+ncols+'" style="background:#2878B5;color:#ffffff;font-family:Arial;font-size:10.5pt;font-weight:bold;padding:8px 16px;border:none">'
+    +p.nombre
+    +(cli?' <span style="font-weight:normal"> · Cliente: '+cli+'</span>':'')
+    +(p.salario?' <span style="font-weight:normal"> · '+p.salario+'</span>':'')
+    +'</td></tr>'
+
+    // Fila 3: fecha · total · resumen estados
+    +'<tr><td colspan="'+ncols+'" style="background:#dbeafe;color:#1e3a5f;font-family:Arial;font-size:9.5pt;padding:6px 16px;border-bottom:2px solid #2878B5">'
+    +'<span style="color:#1e3a5f">Fecha: <b>'+fecha+'</b> &nbsp;·&nbsp; Total candidatos: <b>'+cands.length+'</b></span>'
+    +' &nbsp;·&nbsp; '+statSummary
+    +'</td></tr>'
+
+    // Cabeceras columnas
     +'<tr>'+thCells+'</tr>'
-    // All grouped rows
+
+    // Datos agrupados
     +allRows
-    // Footer
-    +'<tr><td colspan="'+flds.length+'" style="background:#f1f5f9;border-top:2px solid #cbd5e1;font-family:Arial;font-size:8.5pt;color:#94a3b8;padding:8px 14px">Rocío Medina Martín &nbsp;·&nbsp; Talentia Search &nbsp;·&nbsp; C/ Fernando Ruiz de León nº 2, K &nbsp;·&nbsp; 28224 Pozuelo de Alarcón, Madrid &nbsp;·&nbsp; 609 087 725 &nbsp;·&nbsp; Documento confidencial</td></tr>'
+
+    // Pie
+    +'<tr><td colspan="'+ncols+'" style="background:#f1f5f9;border-top:2px solid #cbd5e1;font-family:Arial;font-size:8.5pt;color:#94a3b8;padding:8px 14px">'
+    +'Rocío Medina Martín · Talentia Search · C/ Fernando Ruiz de León nº 2, K · 28224 Pozuelo de Alarcón, Madrid · 609 087 725 · Documento confidencial'
+    +'</td></tr>'
+
     +'</table></body></html>';
 
   var blob=new Blob(["\ufeff"+html],{type:"application/vnd.ms-excel;charset=utf-8"});
