@@ -476,7 +476,7 @@ function renderP(){
   var list=getFP(),q=document.getElementById("p-q").value.trim();
   document.getElementById("p-rb").textContent=q?list.length+' resultado'+(list.length!==1?'s':'')+' para "'+q+'"':list.length+' proceso'+(list.length!==1?'s':'')+' · último abierto primero';
   var el=document.getElementById("p-list");
-  if(!procesos.length){el.innerHTML="<div class='empty'>Despliega "Crear nuevo proceso" abajo o usa Importar.</div>";return;}
+  if(!procesos.length){el.innerHTML="<div class='empty'>Despliega \"Crear nuevo proceso\" abajo o usa Importar.</div>";return;}
   if(!list.length){el.innerHTML="<div class='empty'>Ningún proceso coincide.</div>";return;}
   el.innerHTML=list.map(function(p){
     var bg=p.estado==="Activo"?"#DCFCE7":p.estado==="Pausado"?"#FEF3C7":p.estado==="Finalizado"?"#EFF6FF":"#FEE2E2";
